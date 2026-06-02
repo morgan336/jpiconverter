@@ -89,10 +89,22 @@ gunicorn jpiconverter.web.app:app
 ```
 
 …on any Python-friendly host (Render, Fly.io, Railway, PythonAnywhere).
+This repository also ships with a `vercel.json` and `api/index.py` shim
+so it deploys to [Vercel](https://vercel.com) as a serverless Python
+function with no extra configuration.
 
-**Before deploying publicly**, resolve the parser-licence question — see
-`src/jpiconverter/parser/ATTRIBUTION.md`. The upstream `2sec/python-edm`
-repository has no `LICENSE` file.
+## Attribution
+
+- [`2sec/python-edm`](https://github.com/2sec/python-edm) — the binary parser
+  this project's decoder is adapted from.
+- [`openenginedata.org`](https://openenginedata.org) — public browser-side
+  converter whose source documented the GPS field-index encoding used here.
+- [`wannamak/edmtools`](https://github.com/wannamak/edmtools) — JPI metric
+  reference (Apache-2.0).
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).
 
 ## Layout
 

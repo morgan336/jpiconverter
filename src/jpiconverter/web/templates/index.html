@@ -44,6 +44,8 @@
     }
     .notes { font-size: 0.875rem; color: #666; margin-top: 2rem; }
     .notes ul { padding-left: 1.25rem; }
+    .credits { font-size: 0.8125rem; color: #777; margin-top: 2rem; line-height: 1.4; }
+    .credits a { color: inherit; }
   </style>
 </head>
 <body>
@@ -66,10 +68,22 @@
     <ul>
       <li>One CSV is produced per uploaded .JPI, with all flights concatenated.</li>
       <li>GPS (latitude, longitude, altitude, groundspeed) is decoded when the EDM had a GPS feed at flight time. Samples without a GPS lock leave those cells blank.</li>
-      <li>Output is confirmed working with FlySto.net uploads.</li>
-      <li>Files up to 50&nbsp;MB are accepted.</li>
+      <li>Files up to 4&nbsp;MB are accepted.</li>
     </ul>
   </div>
+
+  <p class="credits">
+    Decoding adapted from
+    <a href="https://github.com/2sec/python-edm">2sec/python-edm</a>,
+    with GPS-field documentation from
+    <a href="https://openenginedata.org">openenginedata.org</a>
+    and cross-checked against
+    <a href="https://github.com/wannamak/edmtools">wannamak/edmtools</a>.
+    Source on
+    <a href="https://github.com/morgan336/jpiconverter">GitHub</a>;
+    open source under
+    <a href="https://github.com/morgan336/jpiconverter/blob/main/LICENSE">MIT</a>.
+  </p>
 
   <script>
     const drop = document.getElementById('drop');

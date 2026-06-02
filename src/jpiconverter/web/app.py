@@ -20,8 +20,9 @@ from ..flysto import to_flysto_csv
 
 def create_app() -> Flask:
     app = Flask(__name__)
-    # 50 MB cap — example file is under 1 MB, so this is very generous.
-    app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
+    # 4 MB cap — fits Vercel's hobby-tier 4.5 MB body limit with a small
+    # margin. Real JPI downloads observed so far top out around 2 MB.
+    app.config["MAX_CONTENT_LENGTH"] = 4 * 1024 * 1024
 
     @app.get("/")
     def index():

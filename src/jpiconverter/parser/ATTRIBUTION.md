@@ -6,16 +6,6 @@
 - Commit: `c790955e369eaf4b4173e9ff3bb8ff79c846db43` (master, June 2026)
 - Author credits in-file: based on http://www.rows.ws/jpihack/ and https://github.com/wannamak/edmtools
 
-## License status
-
-The upstream repository **does not include a LICENSE file**. Under default copyright,
-all rights are reserved by the upstream author.
-
-This vendored copy is included here for personal, local use only. **Before deploying
-this tool publicly, the license question must be resolved** — either by obtaining
-explicit permission from the upstream author, or by replacing this parser with a
-clean port from the Apache-2.0-licensed `wannamak/edmtools` (Java).
-
 ## Modifications made vs. upstream
 
 1. Removed `import config` (line 13). Upstream's `config.py` carries plane-specific
