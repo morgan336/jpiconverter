@@ -16,3 +16,7 @@ htmlcov/
 *.swp
 .idea/
 .vscode/
+
+# Personal flight-data fixtures — kept on disk for local testing, not published.
+Example Files/
+FailConvert/
