@@ -63,22 +63,12 @@ FlySto V1 template (39 columns, CRLF line endings):
 
 ## Known limitations
 
-1. **OILT (oil temperature) is always blank.** Upstream emits 0 for every
-   sample on this firmware; we treat it as missing.
-2. **Multi-flight CSV.** FlySto's template appears single-flight; we
-   concatenate on purpose per project requirements. If a multi-flight upload
-   ever turns out to be a problem, a `--per-flight` flag is a small change —
-   the architecture supports it.
-3. **Partial decode on malformed records.** Newer EDM-830 firmware sometimes
-   emits records the parser can't fully interpret (repeat-compression sentinels
-   and decodeflags-mismatch records). The converter recovers as much of the
-   affected flight as possible, logs a warning, and moves on. In practice
-   this affects roughly one flight in fifteen, and only truncates the tail of
-   that single flight.
-
-LAT/LNG/ALT decoding and the `Ndd.mm.ss` / `Wddd.mm.ss` cell format are
-**confirmed working** against FlySto.net (the historical CS-520 blocker is
-resolved).
+**Partial decode on malformed records.** Newer EDM-830 firmware sometimes
+emits records the parser can't fully interpret (repeat-compression sentinels
+and decodeflags-mismatch records). The converter recovers as much of the
+affected flight as possible, logs a warning, and moves on. In practice this
+affects roughly one flight in fifteen, and only truncates the tail of that
+single flight.
 
 ## Deploying
 
