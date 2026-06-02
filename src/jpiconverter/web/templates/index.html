@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JPI to FlySto CSV Converter</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      max-width: 640px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      line-height: 1.5;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    p.lede { color: #666; margin-top: 0; }
+    .drop {
+      border: 2px dashed #888;
+      border-radius: 8px;
+      padding: 2rem 1rem;
+      text-align: center;
+      margin: 1.5rem 0 1rem;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .drop.dragover { background: rgba(100, 150, 255, 0.1); border-color: #4080ff; }
+    .drop input[type=file] { display: block; margin: 0.75rem auto 0; }
+    .filename { margin-top: 0.5rem; font-style: italic; color: #444; }
+    button {
+      font: inherit;
+      padding: 0.6rem 1.2rem;
+      background: #2563eb;
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:disabled { background: #999; cursor: not-allowed; }
+    .error {
+      background: #fee;
+      color: #900;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+    .notes { font-size: 0.875rem; color: #666; margin-top: 2rem; }
+    .notes ul { padding-left: 1.25rem; }
+  </style>
+</head>
+<body>
+  <h1>JPI to FlySto CSV Converter</h1>
+  <p class="lede">Upload a J.P. Instruments .JPI engine-monitor file and download a FlySto.net-compatible CSV.</p>
+
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  <form action="/convert" method="post" enctype="multipart/form-data" id="form">
+    <div class="drop" id="drop">
+      Drag and drop a .JPI file here, or
+      <input type="file" name="jpi" id="file" accept=".JPI,.jpi" required>
+      <div class="filename" id="filename"></div>
+    </div>
+    <button type="submit" id="submit">Convert</button>
+  </form>
+
+  <div class="notes">
+    <strong>Notes</strong>
+    <ul>
+      <li>One CSV is produced per uploaded .JPI, with all flights concatenated.</li>
+      <li>LAT/LNG/ALT columns are blank — they are not currently extracted from the .JPI binary, so FlySto's map features will not work until that is fixed.</li>
+      <li>Files up to 50&nbsp;MB are accepted.</li>
+    </ul>
+  </div>
+
+  <script>
+    const drop = document.getElementById('drop');
+    const file = document.getElementById('file');
+    const fname = document.getElementById('filename');
+
+    file.addEventListener('change', () => {
+      fname.textContent = file.files[0] ? file.files[0].name : '';
+    });
+
+    ['dragenter', 'dragover'].forEach(ev => {
+      drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(ev => {
+      drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('dragover'); });
+    });
+    drop.addEventListener('drop', e => {
+      if (e.dataTransfer.files.length) {
+        file.files = e.dataTransfer.files;
+        fname.textContent = file.files[0].name;
+      }
+    });
+  </script>
+</body>
+</html>
