@@ -19,8 +19,6 @@ src/jpiconverter/parser/ATTRIBUTION.md for the format details.
 
 from __future__ import annotations
 
-import os
-import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
@@ -73,18 +71,11 @@ def decode(jpi_bytes: bytes, source_name: str = "upload.JPI") -> tuple[list[Flig
     Returns (flights, header_config) where header_config is the parser's
     config dict (tail no, EDM type, etc.) — useful for the web UI.
     """
-    # The vendored parser only accepts a file path. Write bytes to a temp file.
-    # This is purely an interface impedance match; the file is deleted on exit.
-    with tempfile.NamedTemporaryFile(suffix=".JPI", delete=False) as tmp:
-        tmp.write(jpi_bytes)
-        tmp_path = tmp.name
-    try:
-        edm = EDMData(tmp_path)
-        edm.read()
-        edm.parseHeader()
-        edm.parseFlights(additional_columns=None)
-    finally:
-        os.unlink(tmp_path)
+    # Parse straight from memory — the bytes never touch the filesystem.
+    edm = EDMData(source_name)
+    edm.loadBytes(jpi_bytes)
+    edm.parseHeader()
+    edm.parseFlights(additional_columns=None)
 
     flights = [_to_flight(fnum, edm.flight_rows[fnum])
                for fnum in sorted(edm.flight_rows.keys())]
