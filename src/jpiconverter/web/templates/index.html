@@ -50,14 +50,14 @@
 </head>
 <body>
   <h1>JPI to FlySto CSV Converter</h1>
-  <p class="lede">Upload a J.P. Instruments .JPI engine-monitor file and download a FlySto.net-compatible CSV.</p>
+  <p class="lede">Upload one or more J.P. Instruments .JPI engine-monitor files and download FlySto.net-compatible CSVs.</p>
 
   {% if error %}<div class="error">{{ error }}</div>{% endif %}
 
   <form action="/convert" method="post" enctype="multipart/form-data" id="form">
     <div class="drop" id="drop">
-      Drag and drop a .JPI file here, or
-      <input type="file" name="jpi" id="file" accept=".JPI,.jpi" required>
+      Drag and drop one or more .JPI files here, or
+      <input type="file" name="jpi" id="file" accept=".JPI,.jpi" multiple required>
       <div class="filename" id="filename"></div>
     </div>
     <button type="submit" id="submit">Convert</button>
@@ -66,9 +66,10 @@
   <div class="notes">
     <strong>Notes</strong>
     <ul>
-      <li>One CSV is produced per uploaded .JPI, with all flights concatenated.</li>
+      <li>One CSV is produced per uploaded .JPI, with all flights in that file concatenated.</li>
+      <li>If you upload more than one .JPI, you get a ZIP containing one CSV per input.</li>
       <li>GPS (latitude, longitude, altitude, groundspeed) is decoded when the EDM had a GPS feed at flight time. Samples without a GPS lock leave those cells blank.</li>
-      <li>Files up to 4&nbsp;MB are accepted.</li>
+      <li>Total upload size is capped at 4&nbsp;MB (across all selected files combined).</li>
     </ul>
   </div>
 
@@ -90,9 +91,15 @@
     const file = document.getElementById('file');
     const fname = document.getElementById('filename');
 
-    file.addEventListener('change', () => {
-      fname.textContent = file.files[0] ? file.files[0].name : '';
-    });
+    function renderSelection() {
+      const n = file.files.length;
+      if (n === 0) { fname.textContent = ''; return; }
+      if (n === 1) { fname.textContent = file.files[0].name; return; }
+      const names = Array.from(file.files).map(f => f.name).join(', ');
+      fname.textContent = `${n} files selected: ${names}`;
+    }
+
+    file.addEventListener('change', renderSelection);
 
     ['dragenter', 'dragover'].forEach(ev => {
       drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('dragover'); });
@@ -103,7 +110,7 @@
     drop.addEventListener('drop', e => {
       if (e.dataTransfer.files.length) {
         file.files = e.dataTransfer.files;
-        fname.textContent = file.files[0].name;
+        renderSelection();
       }
     });
   </script>

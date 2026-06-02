@@ -20,6 +20,7 @@ htmlcov/
 # Personal flight-data fixtures — kept on disk for local testing, not published.
 Example Files/
 FailConvert/
+batchtest/
 
 # Project memory for the AI assistant — kept locally, not published.
 Claude.md
