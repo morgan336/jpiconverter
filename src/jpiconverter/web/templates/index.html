@@ -65,7 +65,8 @@
     <strong>Notes</strong>
     <ul>
       <li>One CSV is produced per uploaded .JPI, with all flights concatenated.</li>
-      <li>LAT/LNG/ALT columns are blank — they are not currently extracted from the .JPI binary, so FlySto's map features will not work until that is fixed.</li>
+      <li>GPS (latitude, longitude, altitude, groundspeed) is decoded when the EDM had a GPS feed at flight time. Samples without a GPS lock leave those cells blank.</li>
+      <li>The LAT/LNG cell format follows the FlySto template (<code>Ndd.mm.ss</code> / <code>Wddd.mm.ss</code>); whether FlySto accepts this exact format is unverified — please report back if uploads fail.</li>
       <li>Files up to 50&nbsp;MB are accepted.</li>
     </ul>
   </div>

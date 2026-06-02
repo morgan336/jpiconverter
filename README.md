@@ -3,7 +3,9 @@
 Converts J.P. Instruments (JPI) EDM engine-monitor `.JPI` files into CSVs
 compatible with [FlySto.net](https://flysto.net).
 
-Tested against an EDM-830 download (16 flights, 26k+ samples).
+Tested against several EDM-830 downloads (one clean fixture of 16 flights /
+26k+ samples, plus four real-world files exercising the firmware's
+repeat-compression and malformed-record edge cases).
 
 ## Install
 
@@ -52,24 +54,32 @@ FlySto V1 template (39 columns, CRLF line endings):
 - Row 2 holds the tach summary across the entire file:
   `Engine - Tach Start = ..., Tach End = ..., Tach Duration = ...` (duration is
   the sum of per-flight engine-on time, not the wall-clock span between flights).
-- Optional columns the upstream parser does not extract (T1, FF2, FP, AMP,
-  RFL, LFL, ALT, LAT, LNG, …) are left blank, except `USD2` which emits
-  the literal `NA` matching the template.
+- GPS (`LAT`/`LNG`/`ALT`/`SPD`) is decoded when the EDM had a GPS feed at
+  flight time — typically 95–97% of rows on flights with a GPS lock at engine
+  start. Rows without a lock have those cells blank.
+- Optional columns the source does not log (`T1`, `FF2`, `FP`, `AMP`, `RFL`,
+  `LFL`) are left blank, except `USD2` which emits the literal `NA` to match
+  the template.
 
 ## Known limitations
 
-1. **No GPS position.** The vendored parser does not extract `LAT`/`LNG`/`ALT`,
-   so those columns are always blank. Only `SPD` (groundspeed) is populated.
-   FlySto's map view will not work; engine-data views should.
-2. **OILT (oil temperature) is always blank.** The upstream parser emits 0 for
-   every sample on this firmware, which we treat as "missing".
-3. **LAT/LNG zero-padding is unproven.** When position decoding is added,
-   the format is pinned to `NDD.MM.SS` / `WDDD.MM.SS` (zero-padded). Until
-   FlySto accepts an upload, it is the conservative guess (see
-   `src/jpiconverter/geo.py`).
-4. **Multi-flight CSV.** FlySto's template appears single-flight; we concatenate
-   on purpose, per project requirements. If FlySto rejects the upload, the fix
-   is a `--per-flight` flag — the architecture already supports it.
+1. **LAT/LNG cell format is unproven against FlySto.** The decode itself is
+   verified (matches `openenginedata.org`'s output exactly), but the
+   `Ndd.mm.ss` / `Wddd.mm.ss` zero-padded integer-DMS format used in the CSV
+   is the conservative guess based on the template. CS-520 was the historical
+   FlySto blocker; until a real upload succeeds, the format is unproven. The
+   only file to change if rejected is `src/jpiconverter/geo.py`.
+2. **OILT (oil temperature) is always blank.** Upstream emits 0 for every
+   sample on this firmware; we treat it as missing.
+3. **Multi-flight CSV.** FlySto's template appears single-flight; we
+   concatenate on purpose per project requirements. If FlySto rejects, a
+   `--per-flight` flag is a small change — the architecture supports it.
+4. **Partial decode on malformed records.** Newer EDM-830 firmware sometimes
+   emits records the parser can't fully interpret (repeat-compression sentinels
+   and decodeflags-mismatch records). The converter recovers as much of the
+   affected flight as possible, logs a warning, and moves on. In practice
+   this affects roughly one flight in fifteen, and only truncates the tail of
+   that single flight.
 
 ## Deploying
 
